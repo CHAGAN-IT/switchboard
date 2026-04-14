@@ -94,10 +94,9 @@ async def test_list_all_returns_servers(session, repo: ServerRepository) -> None
     names = [s.name for s in servers]
     assert "server-aaa" in names
     assert "server-bbb" in names
-    # Verify ordering: most recent first
-    if len(servers) == 2:
-        assert servers[0].name == "server-bbb"
-        assert servers[1].name == "server-aaa"
+    # Verify ordering: created_at should be non-increasing (desc)
+    for i in range(len(servers) - 1):
+        assert servers[i].created_at >= servers[i + 1].created_at
 
 
 @pytest.mark.integration

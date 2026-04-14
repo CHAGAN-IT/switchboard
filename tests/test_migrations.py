@@ -26,9 +26,9 @@ def test_migrations_upgrade_downgrade() -> None:
     Tests against the test database.
     """
     settings = get_settings()
-    sync_url = settings.test_database_url.replace("+asyncpg", "")
-
-    env = {**os.environ, "DATABASE_URL": sync_url}
+    # Pass the async URL directly -- env.py uses async_engine_from_config
+    # which requires the +asyncpg dialect prefix.
+    env = {**os.environ, "DATABASE_URL": settings.test_database_url}
 
     # Downgrade first to ensure clean state
     subprocess.run(

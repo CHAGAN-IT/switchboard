@@ -1,9 +1,8 @@
 """Shared test fixtures for Switchboard integration tests.
 
 Provides:
-- Session-scoped async engine connected to the test database.
 - Session-scoped migration fixture that applies Alembic migrations once.
-- Per-test async session with transaction rollback for isolation.
+- Per-test async engine and session with transaction rollback for isolation.
 """
 
 from __future__ import annotations
@@ -25,6 +24,8 @@ from switchboard.config import get_settings
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
+    from sqlalchemy.ext.asyncio import AsyncEngine
+
 # Project root for running Alembic commands
 PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
 
@@ -38,10 +39,9 @@ def _apply_migrations() -> None:
     so alembic/env.py picks up the test database URL.
     """
     settings = get_settings()
-    # Convert async URL to sync for Alembic commands
-    sync_url = settings.test_database_url.replace("+asyncpg", "")
-
-    env = {**os.environ, "DATABASE_URL": sync_url}
+    # Pass the async URL directly -- env.py uses async_engine_from_config
+    # which requires the +asyncpg dialect prefix.
+    env = {**os.environ, "DATABASE_URL": settings.test_database_url}
 
     result = subprocess.run(
         ["uv", "run", "alembic", "upgrade", "head"],
@@ -68,9 +68,14 @@ def _apply_migrations() -> None:
     )
 
 
-@pytest_asyncio.fixture(scope="session")
-async def engine(_apply_migrations: None):
-    """Create a session-scoped async engine for the test database."""
+@pytest_asyncio.fixture
+async def engine(_apply_migrations: None) -> AsyncGenerator[AsyncEngine, None]:
+    """Per-test async engine for the test database.
+
+    Created per-test to avoid asyncpg event loop mismatch errors.
+    Each test function runs in its own event loop, so the engine
+    must be created within that loop's context.
+    """
     settings = get_settings()
     _engine = create_async_engine(
         settings.test_database_url,
@@ -81,7 +86,7 @@ async def engine(_apply_migrations: None):
 
 
 @pytest_asyncio.fixture
-async def session(engine) -> AsyncGenerator[AsyncSession, None]:
+async def session(engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
     """Per-test async session with transaction rollback.
 
     Each test runs inside a transaction that is rolled back after
