@@ -34,9 +34,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Project scaffolding: package structure, dependencies, config, Docker Compose
-- [ ] 01-02-PLAN.md — Data models: Server ORM model, Pydantic schemas, Alembic migration
-- [ ] 01-03-PLAN.md — Repository and tests: ServerRepository CRUD, test infrastructure, integration tests
+- [x] 01-01-PLAN.md — Project scaffolding: package structure, dependencies, config, Docker Compose
+- [x] 01-02-PLAN.md — Data models: Server ORM model, Pydantic schemas, Alembic migration
+- [x] 01-03-PLAN.md — Repository and tests: ServerRepository CRUD, test infrastructure, integration tests
 
 ### Phase 2: Admin API
 **Goal**: An operator can register MCP servers, list all registered servers, and retrieve details for any individual server via a running FastAPI REST API protected by operator JWT validation.
