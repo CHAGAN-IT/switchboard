@@ -98,30 +98,30 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SREG-01 | — | Pending |
-| SREG-02 | — | Pending |
-| SREG-03 | — | Pending |
-| CONT-01 | — | Pending |
-| CONT-02 | — | Pending |
-| CONT-03 | — | Pending |
-| CONT-04 | — | Pending |
-| GTWY-01 | — | Pending |
-| GTWY-02 | — | Pending |
-| GTWY-03 | — | Pending |
-| SECU-01 | — | Pending |
-| SECU-02 | — | Pending |
-| OBSV-01 | — | Pending |
-| REFS-01 | — | Pending |
-| REFS-02 | — | Pending |
-| PLAT-01 | — | Pending |
-| PLAT-02 | — | Pending |
-| PLAT-03 | — | Pending |
+| PLAT-03 | Phase 1 | Pending |
+| SREG-01 | Phase 2 | Pending |
+| SREG-02 | Phase 2 | Pending |
+| SREG-03 | Phase 2 | Pending |
+| CONT-01 | Phase 3 | Pending |
+| CONT-02 | Phase 3 | Pending |
+| CONT-03 | Phase 3 | Pending |
+| REFS-01 | Phase 4 | Pending |
+| REFS-02 | Phase 4 | Pending |
+| GTWY-01 | Phase 5 | Pending |
+| GTWY-02 | Phase 5 | Pending |
+| GTWY-03 | Phase 5 | Pending |
+| SECU-01 | Phase 5 | Pending |
+| SECU-02 | Phase 5 | Pending |
+| OBSV-01 | Phase 5 | Pending |
+| PLAT-01 | Phase 5 | Pending |
+| CONT-04 | Phase 6 | Pending |
+| PLAT-02 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 18 total
-- Mapped to phases: 0
-- Unmapped: 18 ⚠️ (roadmap not yet created)
+- Mapped to phases: 18
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-14*
-*Last updated: 2026-04-14 after initial definition*
+*Last updated: 2026-04-14 after roadmap creation*
