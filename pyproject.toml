@@ -38,5 +38,15 @@ line-length = 88
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "TCH"]
 
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = [
+    "pydantic.BaseModel",
+    "sqlalchemy.orm.DeclarativeBase",
+    "switchboard.db.base.Base",
+]
+runtime-evaluated-decorators = [
+    "pydantic.validate_call",
+]
+
 [tool.ruff.lint.isort]
 known-first-party = ["switchboard"]
