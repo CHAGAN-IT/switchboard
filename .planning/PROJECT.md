@@ -12,7 +12,8 @@ Organizations can deploy, manage, and govern MCP servers in one place — custom
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Codebase is Python with `switchboard/` as the top-level package directory — Validated in Phase 01: foundation
+- [x] Platform runs locally via Docker Compose for development — Validated in Phase 01: foundation (PostgreSQL 16, dev + test databases)
 
 ### Active
 
@@ -77,4 +78,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-14 after initialization*
+*Last updated: 2026-04-14 after Phase 01: foundation complete*
