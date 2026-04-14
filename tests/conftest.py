@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import os
 import subprocess
-from collections.abc import AsyncGenerator
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 import pytest_asyncio
@@ -21,6 +21,9 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from switchboard.config import get_settings
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
 
 # Project root for running Alembic commands
 PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
@@ -49,7 +52,9 @@ def _apply_migrations() -> None:
         check=False,
     )
     if result.returncode != 0:
-        pytest.fail(f"Alembic upgrade failed:\nstdout: {result.stdout}\nstderr: {result.stderr}")
+        pytest.fail(
+            f"Alembic upgrade failed:\nstdout: {result.stdout}\nstderr: {result.stderr}"
+        )
 
     yield  # type: ignore[misc]
 
@@ -86,12 +91,11 @@ async def session(engine) -> AsyncGenerator[AsyncSession, None]:
     inside repository methods works correctly within the outer
     transaction boundary.
     """
-    async with engine.connect() as connection:
-        async with connection.begin() as transaction:
-            async_session = AsyncSession(
-                bind=connection,
-                join_transaction_mode="create_savepoint",
-                expire_on_commit=False,
-            )
-            yield async_session
-            await transaction.rollback()
+    async with engine.connect() as connection, connection.begin() as transaction:
+        async_session = AsyncSession(
+            bind=connection,
+            join_transaction_mode="create_savepoint",
+            expire_on_commit=False,
+        )
+        yield async_session
+        await transaction.rollback()
