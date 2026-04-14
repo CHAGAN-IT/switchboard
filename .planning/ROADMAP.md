@@ -31,7 +31,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Running `uv run pytest` against the registry module executes integration tests that create, read, list, and delete server records against a real PostgreSQL instance
   3. Alembic migrations apply cleanly on a fresh database and roll back without errors
   4. Server name validation rejects strings that do not match `^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$` at the model level
-**Plans**: TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Project scaffolding: package structure, dependencies, config, Docker Compose
+- [ ] 01-02-PLAN.md — Data models: Server ORM model, Pydantic schemas, Alembic migration
+- [ ] 01-03-PLAN.md — Repository and tests: ServerRepository CRUD, test infrastructure, integration tests
 
 ### Phase 2: Admin API
 **Goal**: An operator can register MCP servers, list all registered servers, and retrieve details for any individual server via a running FastAPI REST API protected by operator JWT validation.
@@ -112,7 +117,7 @@ Note: Phase 4 depends only on Phase 1 and can be worked concurrently with Phases
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/? | Not started | - |
+| 1. Foundation | 0/3 | Planning complete | - |
 | 2. Admin API | 0/? | Not started | - |
 | 3. Container Manager | 0/? | Not started | - |
 | 4. Reference Servers | 0/? | Not started | - |
