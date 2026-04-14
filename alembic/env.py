@@ -33,6 +33,25 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 
+def get_url() -> str:
+    """Get database URL from config or settings.
+
+    Checks config.get_main_option("sqlalchemy.url") first (set by
+    test fixtures or CLI), falling back to get_settings().database_url.
+    Also respects the DATABASE_URL environment variable for subprocess-based
+    migration runners used in tests.
+    """
+    import os
+
+    env_url = os.environ.get("DATABASE_URL")
+    if env_url:
+        return env_url
+    cfg_url = config.get_main_option("sqlalchemy.url")
+    if cfg_url:
+        return cfg_url
+    return get_settings().database_url
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -44,7 +63,7 @@ def run_migrations_offline() -> None:
     Calls to context.execute() here emit the given string to the
     script output.
     """
-    url = get_settings().database_url
+    url = get_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -66,7 +85,7 @@ def do_run_migrations(connection: Connection) -> None:
 async def run_async_migrations() -> None:
     """Create an async engine and associate a connection with the context."""
     configuration = config.get_section(config.config_ini_section, {})
-    configuration["sqlalchemy.url"] = get_settings().database_url
+    configuration["sqlalchemy.url"] = get_url()
     connectable = async_engine_from_config(
         configuration,
         prefix="sqlalchemy.",
