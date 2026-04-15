@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,6 +28,22 @@ class Settings(BaseSettings):
         "postgresql+asyncpg://postgres:postgres@localhost:5432/switchboard_test"
     )
     db_echo: bool = False
+
+    # Auth
+    operator_jwt_secret: str = ""
+
+    @field_validator("operator_jwt_secret")
+    @classmethod
+    def validate_jwt_secret_length(cls, v: str) -> str:
+        """Enforce minimum 32-byte JWT secret per RFC 7518 Section 3.2.
+
+        Empty string is allowed as a default for development. When a value
+        is explicitly set, it must be at least 32 bytes to resist brute-force.
+        """
+        if v and len(v.encode()) < 32:
+            msg = "OPERATOR_JWT_SECRET must be at least 32 bytes"
+            raise ValueError(msg)
+        return v
 
 
 @lru_cache
