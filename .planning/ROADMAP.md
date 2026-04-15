@@ -48,7 +48,11 @@ Plans:
   3. `GET /servers/{name}` returns the full record for a specific server, or 404 if the server does not exist
   4. Requests without a valid operator JWT Bearer token return 401 with a `WWW-Authenticate` header
   5. OpenAPI docs at `/docs` accurately reflect all Admin API endpoints
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Dependencies, config, and Admin API modules (auth, router, app)
+- [ ] 02-02-PLAN.md — Admin API test suite (auth unit tests, endpoint integration tests, OpenAPI smoke test)
 
 ### Phase 3: Container Manager
 **Goal**: An operator can start, stop, and restart registered MCP server containers via the Admin API, using a Docker-backed container manager that wraps all SDK calls safely for async use.
@@ -118,7 +122,7 @@ Note: Phase 4 depends only on Phase 1 and can be worked concurrently with Phases
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/3 | Planning complete | - |
-| 2. Admin API | 0/? | Not started | - |
+| 2. Admin API | 0/2 | Planning complete | - |
 | 3. Container Manager | 0/? | Not started | - |
 | 4. Reference Servers | 0/? | Not started | - |
 | 5. Gateway | 0/? | Not started | - |
