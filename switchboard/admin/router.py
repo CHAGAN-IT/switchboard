@@ -1,11 +1,13 @@
-"""Admin API router for server registration endpoints.
+"""Admin API router for server registration and lifecycle endpoints.
 
-Provides CRUD endpoints for MCP server registration under /api/v1/servers.
+Provides CRUD endpoints for MCP server registration and container
+lifecycle management (start/stop/restart) under /api/v1/servers.
 All routes are protected by JWT validation at the router level via
 dependencies=[Depends(require_operator)].
 
 Depends on: switchboard.admin.auth, switchboard.db.session,
-            switchboard.registry.repository, switchboard.registry.schemas
+            switchboard.registry.repository, switchboard.registry.schemas,
+            switchboard.container
 """
 
 from __future__ import annotations
@@ -18,8 +20,14 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from switchboard.admin.auth import require_operator
+from switchboard.container import get_container_manager
+from switchboard.container.exceptions import ContainerStartError, ContainerStopError
+from switchboard.container.manager import (
+    ContainerManager,  # noqa: TC001 -- FastAPI needs this at runtime for Annotated[ContainerManager, Depends()]
+)
 from switchboard.db.session import get_session
 from switchboard.registry.exceptions import DuplicateServerError
+from switchboard.registry.models import ServerStatus
 from switchboard.registry.repository import ServerRepository
 from switchboard.registry.schemas import ServerCreate, ServerRead
 
@@ -137,4 +145,151 @@ async def get_server(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Server '{name}' not found",
         )
+    return ServerRead.model_validate(server)
+
+
+@router.post(
+    "/servers/{name}/start",
+    response_model=ServerRead,
+    summary="Start a server container",
+)
+async def start_server(
+    name: str,
+    session: Annotated[AsyncSession, Depends(get_session)],
+    repo: Annotated[ServerRepository, Depends(get_repository)],
+    cm: Annotated[ContainerManager, Depends(get_container_manager)],
+) -> ServerRead:
+    """Start the Docker container for a registered server.
+
+    Launches a new container on the internal network and updates the
+    registry with running status and container ID.
+
+    Args:
+        name: The unique server name.
+        session: Async database session injected by FastAPI.
+        repo: Server repository injected by FastAPI.
+        cm: Container manager injected by FastAPI.
+
+    Returns:
+        The updated server record with running status.
+
+    Raises:
+        HTTPException: 404 if server not found, 409 if already running,
+            500 if container start fails.
+    """
+    server = await repo.get_by_name(session, name)
+    if server is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Server '{name}' not found",
+        )
+    if server.status == ServerStatus.running:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Server '{name}' is already running",
+        )
+    try:
+        server = await cm.start(session, server, repo)
+    except ContainerStartError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(exc),
+        ) from None
+    await session.commit()
+    return ServerRead.model_validate(server)
+
+
+@router.post(
+    "/servers/{name}/stop",
+    response_model=ServerRead,
+    summary="Stop a server container",
+)
+async def stop_server(
+    name: str,
+    session: Annotated[AsyncSession, Depends(get_session)],
+    repo: Annotated[ServerRepository, Depends(get_repository)],
+    cm: Annotated[ContainerManager, Depends(get_container_manager)],
+) -> ServerRead:
+    """Stop and remove the Docker container for a registered server.
+
+    Stops the running container and updates the registry with stopped
+    status and cleared container ID.
+
+    Args:
+        name: The unique server name.
+        session: Async database session injected by FastAPI.
+        repo: Server repository injected by FastAPI.
+        cm: Container manager injected by FastAPI.
+
+    Returns:
+        The updated server record with stopped status.
+
+    Raises:
+        HTTPException: 404 if server not found, 409 if not running,
+            500 if container stop fails.
+    """
+    server = await repo.get_by_name(session, name)
+    if server is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Server '{name}' not found",
+        )
+    if server.status != ServerStatus.running:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Server '{name}' is not running",
+        )
+    try:
+        server = await cm.stop(session, server, repo)
+    except ContainerStopError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(exc),
+        ) from None
+    await session.commit()
+    return ServerRead.model_validate(server)
+
+
+@router.post(
+    "/servers/{name}/restart",
+    response_model=ServerRead,
+    summary="Restart a server container",
+)
+async def restart_server(
+    name: str,
+    session: Annotated[AsyncSession, Depends(get_session)],
+    repo: Annotated[ServerRepository, Depends(get_repository)],
+    cm: Annotated[ContainerManager, Depends(get_container_manager)],
+) -> ServerRead:
+    """Restart the Docker container for a registered server.
+
+    Performs a stop followed by a start, producing a fresh container.
+    Works regardless of current server state (stopped servers get started).
+
+    Args:
+        name: The unique server name.
+        session: Async database session injected by FastAPI.
+        repo: Server repository injected by FastAPI.
+        cm: Container manager injected by FastAPI.
+
+    Returns:
+        The updated server record with running status and new container ID.
+
+    Raises:
+        HTTPException: 404 if server not found, 500 if restart fails.
+    """
+    server = await repo.get_by_name(session, name)
+    if server is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Server '{name}' not found",
+        )
+    try:
+        server = await cm.restart(session, server, repo)
+    except (ContainerStartError, ContainerStopError) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(exc),
+        ) from None
+    await session.commit()
     return ServerRead.model_validate(server)
