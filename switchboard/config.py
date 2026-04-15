@@ -35,12 +35,17 @@ class Settings(BaseSettings):
     @field_validator("operator_jwt_secret")
     @classmethod
     def validate_jwt_secret_length(cls, v: str) -> str:
-        """Enforce minimum 32-byte JWT secret per RFC 7518 Section 3.2.
+        """Enforce non-empty JWT secret with minimum 32-byte length per RFC 7518 §3.2.
 
-        Empty string is allowed as a default for development. When a value
-        is explicitly set, it must be at least 32 bytes to resist brute-force.
+        An empty or missing OPERATOR_JWT_SECRET environment variable will
+        cause the application to fail at startup rather than boot with an
+        insecure empty HMAC key.
         """
-        if v and len(v.encode()) < 32:
+        if not v:
+            raise ValueError(
+                "OPERATOR_JWT_SECRET environment variable is required and must not be empty"
+            )
+        if len(v.encode()) < 32:
             msg = "OPERATOR_JWT_SECRET must be at least 32 bytes"
             raise ValueError(msg)
         return v
