@@ -60,7 +60,13 @@ def make_operator_token(
         exp = now + exp_delta
     else:
         exp = now + timedelta(hours=1)
-    payload = {"sub": sub, "exp": exp, "iat": now}
+    payload = {
+        "sub": sub,
+        "exp": exp,
+        "iat": now,
+        "aud": "switchboard-admin",
+        "iss": "switchboard",
+    }
     return jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_ALGORITHM)
 
 

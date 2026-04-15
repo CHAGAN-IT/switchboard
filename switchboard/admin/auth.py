@@ -51,6 +51,9 @@ async def require_operator(
             credentials.credentials,
             settings.operator_jwt_secret,
             algorithms=["HS256"],
+            options={"require": ["exp", "iat", "sub"]},
+            audience="switchboard-admin",
+            issuer="switchboard",
         )
     except jwt.ExpiredSignatureError:
         raise HTTPException(
