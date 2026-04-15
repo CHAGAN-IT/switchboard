@@ -21,12 +21,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import docker.errors
 import pytest
 
-from switchboard.container.exceptions import ContainerStartError, ContainerStopError
+from switchboard.container.exceptions import ContainerStartError
 from switchboard.container.manager import (
     CONTAINER_NAME_PREFIX,
     CONTAINER_PORT,
-    ContainerManager,
     DOCKER_NETWORK,
+    ContainerManager,
 )
 from switchboard.registry.models import ServerStatus
 
@@ -53,7 +53,7 @@ class TestStart:
         mock_session: AsyncMock,
         mock_repo: AsyncMock,
     ) -> None:
-        """start() calls containers.run() with correct image, name, detach, and network."""
+        """start() calls containers.run() with correct image, name, detach, network."""
         with patch(
             "switchboard.container.manager.docker.from_env",
             return_value=mock_docker_client,
@@ -216,7 +216,7 @@ class TestStart:
         mock_session: AsyncMock,
         mock_repo: AsyncMock,
     ) -> None:
-        """If the Docker network does not exist, it is created before containers.run()."""
+        """If the Docker network is missing, it is created before containers.run()."""
         mock_docker_client.networks.get.side_effect = docker.errors.NotFound(
             "not found"
         )
