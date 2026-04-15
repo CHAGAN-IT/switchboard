@@ -29,7 +29,10 @@ router = APIRouter(
     dependencies=[Depends(require_operator)],
 )
 
-_repo = ServerRepository()
+
+def get_repository() -> ServerRepository:
+    """Return a ServerRepository instance for use in endpoint handlers."""
+    return ServerRepository()
 
 
 @router.post(
@@ -41,6 +44,7 @@ _repo = ServerRepository()
 async def register_server(
     body: ServerCreate,
     session: Annotated[AsyncSession, Depends(get_session)],
+    repo: Annotated[ServerRepository, Depends(get_repository)],
 ) -> ServerRead:
     """Register a new MCP server in the registry.
 
@@ -59,7 +63,7 @@ async def register_server(
         HTTPException: 409 if server name already exists (D-03).
     """
     try:
-        server = await _repo.create(
+        server = await repo.create(
             session,
             name=body.name,
             container_image=body.container_image,
@@ -87,6 +91,7 @@ async def register_server(
 )
 async def list_servers(
     session: Annotated[AsyncSession, Depends(get_session)],
+    repo: Annotated[ServerRepository, Depends(get_repository)],
 ) -> list[ServerRead]:
     """List all registered MCP servers with their current status.
 
@@ -94,11 +99,12 @@ async def list_servers(
 
     Args:
         session: Async database session injected by FastAPI.
+        repo: Server repository injected by FastAPI.
 
     Returns:
         List of all registered server records.
     """
-    servers = await _repo.list_all(session)
+    servers = await repo.list_all(session)
     return [ServerRead.model_validate(s) for s in servers]
 
 
@@ -110,12 +116,14 @@ async def list_servers(
 async def get_server(
     name: str,
     session: Annotated[AsyncSession, Depends(get_session)],
+    repo: Annotated[ServerRepository, Depends(get_repository)],
 ) -> ServerRead:
     """Retrieve details for a specific registered server.
 
     Args:
         name: The unique server name.
         session: Async database session injected by FastAPI.
+        repo: Server repository injected by FastAPI.
 
     Returns:
         The server record for the given name.
@@ -123,7 +131,7 @@ async def get_server(
     Raises:
         HTTPException: 404 if no server with the given name exists.
     """
-    server = await _repo.get_by_name(session, name)
+    server = await repo.get_by_name(session, name)
     if server is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
