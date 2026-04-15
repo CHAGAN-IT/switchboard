@@ -12,6 +12,16 @@ import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+# Set OPERATOR_JWT_SECRET before any switchboard imports so that the
+# module-level get_settings() call in switchboard/db/session.py succeeds.
+# The actual JWT secret used in tests is TEST_JWT_SECRET from
+# tests/admin/conftest.py, injected via FastAPI dependency_overrides.
+# This value only needs to satisfy the 32-byte minimum validator.
+os.environ.setdefault(
+    "OPERATOR_JWT_SECRET",
+    "pytest-default-secret-32-bytes-min!",
+)
+
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import (
