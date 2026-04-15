@@ -70,6 +70,12 @@ async def register_server(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Server '{body.name}' already exists",
         ) from None
+    except ValueError as exc:
+        # ORM-level validation (e.g. name pattern) caught here
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail=str(exc),
+        ) from None
     await session.commit()
     return ServerRead.model_validate(server)
 
