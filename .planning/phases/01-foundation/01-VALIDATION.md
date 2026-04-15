@@ -1,10 +1,11 @@
 ---
 phase: 1
 slug: foundation
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: verified
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-04-14
+updated: 2026-04-15
 ---
 
 # Phase 1 — Validation Strategy
@@ -38,12 +39,12 @@ created: 2026-04-14
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 1-01-01 | 01 | 0 | PLAT-03 | — | N/A | unit | `uv run python -c "import switchboard"` | ❌ W0 | ⬜ pending |
-| 1-01-02 | 01 | 0 | PLAT-03 | — | N/A | unit | `uv run pytest --co -q 2>/dev/null | grep registry` | ❌ W0 | ⬜ pending |
-| 1-01-03 | 01 | 1 | PLAT-03 | — | N/A | integration | `uv run pytest tests/registry/test_models.py -x -q` | ❌ W0 | ⬜ pending |
-| 1-01-04 | 01 | 1 | PLAT-03 | — | Input validation rejects invalid server names | unit | `uv run pytest tests/registry/test_validation.py -x -q` | ❌ W0 | ⬜ pending |
-| 1-01-05 | 01 | 2 | PLAT-03 | — | N/A | integration | `uv run pytest tests/registry/test_migrations.py -x -q` | ❌ W0 | ⬜ pending |
-| 1-01-06 | 01 | 2 | PLAT-03 | — | N/A | integration | `uv run pytest tests/registry/ -x -q` | ❌ W0 | ⬜ pending |
+| 1-01-01 | 01 | 0 | PLAT-03 | — | N/A | unit | `uv run python -c "import switchboard"` | ✅ | ✅ green |
+| 1-01-02 | 01 | 0 | PLAT-03 | — | N/A | unit | `uv run pytest --co -q 2>/dev/null \| grep registry` | ✅ | ✅ green |
+| 1-01-03 | 01 | 1 | PLAT-03 | — | N/A | integration | `uv run pytest tests/registry/test_models.py -x -q` | ✅ | ✅ green |
+| 1-01-04 | 01 | 1 | PLAT-03 | T-02-01 | Input validation rejects invalid server names | unit | `uv run pytest tests/registry/test_validation.py -x -q` | ✅ | ✅ green |
+| 1-01-05 | 01 | 2 | PLAT-03 | — | N/A | integration | `uv run pytest tests/test_migrations.py -x -q` | ✅ | ✅ green |
+| 1-01-06 | 01 | 2 | PLAT-03 | — | N/A | integration | `uv run pytest tests/registry/ -x -q` | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -51,13 +52,13 @@ created: 2026-04-14
 
 ## Wave 0 Requirements
 
-- [ ] `tests/__init__.py` — make tests a package
-- [ ] `tests/conftest.py` — async session fixture with savepoint rollback per test
-- [ ] `tests/registry/__init__.py` — registry test package
-- [ ] `tests/registry/test_models.py` — stubs for PLAT-03 (CRUD operations)
-- [ ] `tests/registry/test_validation.py` — stubs for server name regex validation
-- [ ] `tests/registry/test_migrations.py` — stubs for Alembic up/down migration
-- [ ] `uv add --dev pytest pytest-asyncio` — if not already installed
+- [x] `tests/__init__.py` — make tests a package
+- [x] `tests/conftest.py` — async session fixture with savepoint rollback per test
+- [x] `tests/registry/__init__.py` — registry test package
+- [x] `tests/registry/test_models.py` — 8 tests covering PLAT-03 (ORM model, schemas)
+- [x] `tests/registry/test_validation.py` — 19 tests for server name ORM + Pydantic validation (generated 2026-04-15)
+- [x] `tests/test_migrations.py` — Alembic up/down migration cycle test
+- [x] `uv add --dev pytest pytest-asyncio` — installed
 
 ---
 
@@ -69,13 +70,21 @@ created: 2026-04-14
 
 ---
 
+## Validation Audit 2026-04-15
+
+| Metric | Count |
+|--------|-------|
+| Gaps found | 1 |
+| Resolved | 1 |
+| Escalated | 0 |
+
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 15s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have automated verify commands
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 15s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** verified 2026-04-15
