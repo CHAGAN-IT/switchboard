@@ -51,8 +51,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Dependencies, config, and Admin API modules (auth, router, app)
-- [ ] 02-02-PLAN.md — Admin API test suite (auth unit tests, endpoint integration tests, OpenAPI smoke test)
+- [x] 02-01-PLAN.md — Dependencies, config, and Admin API modules (auth, router, app)
+- [x] 02-02-PLAN.md — Admin API test suite (auth unit tests, endpoint integration tests, OpenAPI smoke test)
 
 ### Phase 3: Container Manager
 **Goal**: An operator can start, stop, and restart registered MCP server containers via the Admin API, using a Docker-backed container manager that wraps all SDK calls safely for async use.
@@ -64,7 +64,11 @@ Plans:
   3. `POST /servers/{name}/restart` stops and relaunches the container without requiring manual operator steps
   4. All Docker SDK calls execute inside `asyncio.to_thread()` — no blocking calls in the async event loop
   5. MCP server containers are not reachable on any host-published port; they exist only on the internal Docker network
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — ContainerManager service: exceptions, Docker SDK wrapper, unit tests (TDD)
+- [ ] 03-02-PLAN.md — Lifecycle API endpoints: start/stop/restart routes, integration tests (TDD)
 
 ### Phase 4: Reference Servers
 **Goal**: Two containerized MCP servers (echo and ping) exist as Docker images that respond correctly to Streamable HTTP transport requests, providing validated test targets for gateway integration.
@@ -123,7 +127,7 @@ Note: Phase 4 depends only on Phase 1 and can be worked concurrently with Phases
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/3 | Planning complete | - |
 | 2. Admin API | 0/2 | Planning complete | - |
-| 3. Container Manager | 0/? | Not started | - |
+| 3. Container Manager | 0/2 | Planning complete | - |
 | 4. Reference Servers | 0/? | Not started | - |
 | 5. Gateway | 0/? | Not started | - |
 | 6. Health Monitor | 0/? | Not started | - |
