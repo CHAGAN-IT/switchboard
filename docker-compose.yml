@@ -16,5 +16,9 @@ services:
       timeout: 3s
       retries: 5
 
+networks:
+  switchboard-internal:
+    driver: bridge
+
 volumes:
   pgdata:
