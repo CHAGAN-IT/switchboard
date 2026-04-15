@@ -59,6 +59,7 @@ created: 2026-04-15
 | Audit Date | Threats Total | Closed | Open | Run By |
 |------------|---------------|--------|------|--------|
 | 2026-04-15 | 8 | 8 | 0 | gsd-security-auditor (ASVS L1) |
+| 2026-04-15 | 8 | 8 | 0 | re-verified (UAT complete, threats_open: 0 confirmed) |
 
 ---
 
