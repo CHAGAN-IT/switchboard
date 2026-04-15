@@ -3,20 +3,24 @@
 Provides:
 - make_operator_token helper for generating test JWTs.
 - auth_headers fixture with a valid operator token.
-- client fixture (async) with dependency overrides for session and settings.
+- mock_container_manager fixture with mocked async lifecycle methods.
+- client fixture (async) with dependency overrides for session, settings,
+  and ContainerManager.
 - unauthenticated_client fixture for testing auth rejection paths.
 
 Uses httpx.AsyncClient + ASGITransport for async tests that need
 DB access, and sync TestClient for auth-rejection tests that never
 reach the DB layer.
 
-Depends on: switchboard.admin.app, switchboard.config, switchboard.db.session
+Depends on: switchboard.admin.app, switchboard.config, switchboard.db.session,
+            switchboard.container
 """
 
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock
 
 import jwt
 import pytest
@@ -26,6 +30,8 @@ from httpx import ASGITransport, AsyncClient
 
 from switchboard.admin.app import app
 from switchboard.config import Settings, get_settings
+from switchboard.container import get_container_manager
+from switchboard.container.manager import ContainerManager
 from switchboard.db.session import get_session
 
 if TYPE_CHECKING:
@@ -86,9 +92,27 @@ def auth_headers() -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
+@pytest.fixture
+def mock_container_manager() -> ContainerManager:
+    """ContainerManager with mocked async methods for endpoint testing.
+
+    All lifecycle methods (start, stop, restart) are replaced with
+    AsyncMock instances. Tests configure side_effect per scenario to
+    simulate Docker operations against the real DB session.
+    """
+    manager = ContainerManager()
+    manager.start = AsyncMock()  # type: ignore[method-assign]
+    manager.stop = AsyncMock()  # type: ignore[method-assign]
+    manager.restart = AsyncMock()  # type: ignore[method-assign]
+    return manager
+
+
 @pytest_asyncio.fixture
-async def client(session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
-    """Async HTTP client with DB session and settings overrides.
+async def client(
+    session: AsyncSession,
+    mock_container_manager: ContainerManager,
+) -> AsyncGenerator[AsyncClient, None]:
+    """Async HTTP client with DB session, settings, and ContainerManager overrides.
 
     Uses httpx.AsyncClient + ASGITransport so that the test session
     (created by pytest-asyncio) runs in the same event loop as the
@@ -96,13 +120,17 @@ async def client(session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     that occurs with sync TestClient + async DB sessions.
 
     Real JWT auth runs (require_operator is NOT overridden).
+    ContainerManager is overridden to prevent real Docker calls.
     """
 
     async def override_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
+    _mock_cm = mock_container_manager
+
     app.dependency_overrides[get_session] = override_session
     app.dependency_overrides[get_settings] = _override_settings
+    app.dependency_overrides[get_container_manager] = lambda: _mock_cm
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as ac:
