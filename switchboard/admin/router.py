@@ -10,18 +10,18 @@ Depends on: switchboard.admin.auth, switchboard.db.session,
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,  # noqa: TC002 -- FastAPI needs this at runtime for Annotated[AsyncSession, Depends()]
+)
 
 from switchboard.admin.auth import require_operator
 from switchboard.db.session import get_session
 from switchboard.registry.exceptions import DuplicateServerError
 from switchboard.registry.repository import ServerRepository
 from switchboard.registry.schemas import ServerCreate, ServerRead
-
-if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/api/v1",

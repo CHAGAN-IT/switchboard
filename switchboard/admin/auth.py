@@ -9,16 +9,13 @@ Depends on: switchboard.config (get_settings, Settings)
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
 
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from switchboard.config import get_settings
-
-if TYPE_CHECKING:
-    from switchboard.config import Settings
+from switchboard.config import Settings, get_settings
 
 _bearer_scheme = HTTPBearer(
     scheme_name="OperatorJWT",
