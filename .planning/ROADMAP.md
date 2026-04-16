@@ -97,7 +97,12 @@ Plans:
   5. `GET /.well-known/oauth-protected-resource` returns a valid RFC 9728 resource metadata document
   6. Each proxied request produces a structured JSON log line containing trace ID, user identity, server name, HTTP status, and timestamp
   7. `docker compose up` starts gateway, admin API, PostgreSQL, and both reference servers with all service health checks passing
-**Plans**: TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Dependencies, config, require_customer auth dependency, Wave 0 test stubs
+- [ ] 05-02-PLAN.md — Gateway proxy module, app factory, well-known endpoint, full test suite
+- [ ] 05-03-PLAN.md — Root Dockerfile, docker-compose gateway service, human-verified docker compose up
 
 ### Phase 6: Health Monitor
 **Goal**: The platform continuously polls running MCP server containers and exposes current health status via the Admin API so operators know when servers are degraded without manual inspection.
@@ -133,6 +138,6 @@ Note: Phase 4 depends only on Phase 1 and can be worked concurrently with Phases
 | 2. Admin API | 0/2 | Planning complete | - |
 | 3. Container Manager | 0/2 | Planning complete | - |
 | 4. Reference Servers | 0/2 | Planning complete | - |
-| 5. Gateway | 0/? | Not started | - |
+| 5. Gateway | 0/3 | Planning complete | - |
 | 6. Health Monitor | 0/? | Not started | - |
 | 7. AWS Deployment | 0/? | Not started | - |
