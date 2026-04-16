@@ -174,7 +174,8 @@ class ContainerManager:
             docker.errors.APIError: If the Docker API call fails.
             RuntimeError: If the container does not reach running state.
         """
-        with docker.from_env() as client:
+        client = docker.from_env()
+        try:
             self._ensure_network(client)
             self._remove_existing_container(client, name)
 
@@ -194,6 +195,8 @@ class ContainerManager:
                 raise RuntimeError(msg)
 
             return container.id
+        finally:
+            client.close()
 
     def _stop_blocking(self, container_id: str) -> None:
         """Stop and remove a Docker container (blocking, runs in thread).
@@ -201,7 +204,8 @@ class ContainerManager:
         Args:
             container_id: Docker container ID to stop.
         """
-        with docker.from_env() as client:
+        client = docker.from_env()
+        try:
             try:
                 container = client.containers.get(container_id)
                 container.stop(timeout=10)
@@ -209,6 +213,8 @@ class ContainerManager:
             except docker.errors.NotFound:
                 # Container already gone -- no action needed
                 pass
+        finally:
+            client.close()
 
     def _ensure_network(self, client: docker.DockerClient) -> None:
         """Create the internal Docker network if it does not exist.
