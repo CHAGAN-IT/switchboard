@@ -35,7 +35,11 @@ async def test_echo_returns_input_unchanged(echo_server_url: str) -> None:
     Streamable HTTP transport and asserts the response content matches
     the input exactly.
     """
-    async with streamable_http_client(echo_server_url) as (read, write, _):
+    async with streamable_http_client(echo_server_url) as (  # noqa: SIM117
+        read,
+        write,
+        _,
+    ):
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.call_tool("echo", {"message": "hello world"})
@@ -47,7 +51,11 @@ async def test_echo_returns_input_unchanged(echo_server_url: str) -> None:
 async def test_echo_handles_different_messages(echo_server_url: str) -> None:
     """REFS-01 edge case: Echo returns arbitrary strings unchanged."""
     test_message = "switchboard-phase-4-validation-123"
-    async with streamable_http_client(echo_server_url) as (read, write, _):
+    async with streamable_http_client(echo_server_url) as (  # noqa: SIM117
+        read,
+        write,
+        _,
+    ):
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.call_tool("echo", {"message": test_message})
@@ -63,11 +71,15 @@ async def test_ping_responds_to_mcp_ping(ping_server_url: str) -> None:
     a valid EmptyResult is returned. The protocol ping is handled by the
     FastMCP/mcp SDK layer -- no application tool code is involved.
     """
-    async with streamable_http_client(ping_server_url) as (read, write, _):
+    async with streamable_http_client(ping_server_url) as (  # noqa: SIM117
+        read,
+        write,
+        _,
+    ):
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.send_ping()
-            # send_ping() returns EmptyResult on success; raises on timeout/error.
+            # send_ping() returns EmptyResult on success; raises on timeout/error
             assert result is not None
 
 
