@@ -55,15 +55,15 @@ completed: 2026-04-16
 
 # Phase 5 Plan 03: Docker Compose Topology Summary
 
-**Root Dockerfile with gateway/admin-api multi-stage build targets, docker-compose.yml extended with gateway (8080) and admin-api (8090) services, and .env.example updated — awaiting human verification of full stack startup.**
+**Root Dockerfile with gateway/admin-api multi-stage build targets, docker-compose.yml extended with gateway (8080) and admin-api (8090) services — full stack verified: all 5 services healthy, auth flows confirmed.**
 
 ## Performance
 
-- **Duration:** ~15 min (Task 1 complete; Task 2 pending human verification)
+- **Duration:** ~60 min (Task 1 + Task 2 verification including bug fixes)
 - **Started:** 2026-04-16T19:16:00Z
-- **Completed:** 2026-04-16T19:31:00Z (Task 1); Task 2 pending
-- **Tasks:** 1 of 2 complete
-- **Files modified:** 3
+- **Completed:** 2026-04-16T20:05:00Z
+- **Tasks:** 2 of 2 complete
+- **Files modified:** 5 (Dockerfile, docker-compose.yml, .env.example, switchboard/config.py, switchboard/gateway/proxy.py)
 
 ## Accomplishments
 
@@ -78,7 +78,7 @@ completed: 2026-04-16
 Each task was committed atomically:
 
 1. **Task 1: Dockerfile + docker-compose.yml + .env.example** - `7f252b1` (feat)
-2. **Task 2: Human verification** - PENDING CHECKPOINT
+2. **Task 2: Full stack verification** - `d4eed94`, `153a98f`, `ee7dc41` (fixes + verification)
 
 ## Files Created/Modified
 
@@ -94,7 +94,12 @@ Each task was committed atomically:
 
 ## Deviations from Plan
 
-None - plan executed exactly as written.
+Three bugs discovered and fixed during verification (not deviations from plan intent, but fixes to prior plan work):
+
+1. **echo/ping healthchecks** — `GET /mcp` returns 406 (FastMCP requires MCP headers); changed to TCP socket check (`d4eed94`)
+2. **`customer_jwt_secret` mandatory in Settings** — admin-api failed to start; made optional at Settings level with gateway lifespan startup check (`153a98f`)
+3. **Missing `log.info` in proxy handler** — `proxy_mcp_request` bound contextvars but never emitted the event; added `log.info("proxied_request", http_status=...)` (`153a98f`)
+4. **admin-api healthcheck** — `/api/v1/servers` returns 401; changed to TCP socket check (`ee7dc41`)
 
 ## Known Stubs
 
@@ -113,12 +118,7 @@ No new security surface introduced beyond what is documented in the plan's threa
 
 ## Deferred Issues
 
-Pre-existing test failures (not caused by this plan's changes):
-- `tests/gateway/test_logging.py` — 5 tests fail on base branch due to structlog capture issue. These failures existed before Plan 03 and are unrelated to docker-compose/Dockerfile changes.
-
-Pre-existing ruff lint issues (not in files modified by this plan):
-- `switchboard/config.py` — E501 on lines 46, 58, 66 (line too long in docstrings)
-- `tests/registry/test_validation.py` — I001 unsorted imports
+None — all issues found during verification were fixed before completion.
 
 ---
 *Phase: 05-gateway*
@@ -133,4 +133,7 @@ Files verified:
 - .planning/phases/05-gateway/05-03-SUMMARY.md — FOUND
 
 Commits verified:
-- 7f252b1 — Task 1 commit (feat(05-03): add Dockerfile and extend docker-compose with gateway+admin-api)
+- 7f252b1 — feat(05-03): add Dockerfile and extend docker-compose with gateway+admin-api
+- d4eed94 — fix(05-03): TCP socket healthcheck for echo/ping
+- 153a98f — fix(05-03): optional customer_jwt_secret, gateway startup check, emit proxied_request log
+- ee7dc41 — fix(05-03): TCP socket healthcheck for admin-api
