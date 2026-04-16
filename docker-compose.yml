@@ -23,7 +23,7 @@ services:
     networks:
       - switchboard-internal
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/mcp')\""]
+      test: ["CMD-SHELL", "python -c \"import socket; s=socket.create_connection(('localhost',8000),timeout=3); s.close()\""]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -36,7 +36,7 @@ services:
     networks:
       - switchboard-internal
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/mcp')\""]
+      test: ["CMD-SHELL", "python -c \"import socket; s=socket.create_connection(('localhost',8000),timeout=3); s.close()\""]
       interval: 10s
       timeout: 5s
       retries: 5
