@@ -82,8 +82,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Echo and ping server packages: FastMCP implementation, uv-based Dockerfiles, isolated pyproject.toml
-- [ ] 04-02-PLAN.md — Docker Compose integration, root pyproject.toml updates, and reference server integration tests
+- [x] 04-01-PLAN.md — Echo and ping server packages: FastMCP implementation, uv-based Dockerfiles, isolated pyproject.toml
+- [x] 04-02-PLAN.md — Docker Compose integration, root pyproject.toml updates, and reference server integration tests
 
 ### Phase 5: Gateway
 **Goal**: A customer holding a valid JWT can send MCP requests to `/servers/{server-name}/mcp` and have them transparently proxied to the correct running container, with the complete local topology running under Docker Compose.
