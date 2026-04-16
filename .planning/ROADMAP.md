@@ -79,7 +79,11 @@ Plans:
   2. Running the ping image and sending an MCP `ping` request returns a valid response
   3. Both servers use `mcp.run(transport="streamable-http")` — not the deprecated SSE transport
   4. Both images can be registered via the Admin API and started by the container manager
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Echo and ping server packages: FastMCP implementation, uv-based Dockerfiles, isolated pyproject.toml
+- [ ] 04-02-PLAN.md — Docker Compose integration, root pyproject.toml updates, and reference server integration tests
 
 ### Phase 5: Gateway
 **Goal**: A customer holding a valid JWT can send MCP requests to `/servers/{server-name}/mcp` and have them transparently proxied to the correct running container, with the complete local topology running under Docker Compose.
@@ -128,7 +132,7 @@ Note: Phase 4 depends only on Phase 1 and can be worked concurrently with Phases
 | 1. Foundation | 0/3 | Planning complete | - |
 | 2. Admin API | 0/2 | Planning complete | - |
 | 3. Container Manager | 0/2 | Planning complete | - |
-| 4. Reference Servers | 0/? | Not started | - |
+| 4. Reference Servers | 0/2 | Planning complete | - |
 | 5. Gateway | 0/? | Not started | - |
 | 6. Health Monitor | 0/? | Not started | - |
 | 7. AWS Deployment | 0/? | Not started | - |
