@@ -21,6 +21,10 @@ os.environ.setdefault(
     "OPERATOR_JWT_SECRET",
     "pytest-default-secret-32-bytes-min!",
 )
+os.environ.setdefault(
+    "CUSTOMER_JWT_SECRET",
+    "pytest-customer-secret-32bytes!!",
+)
 
 import pytest
 import pytest_asyncio

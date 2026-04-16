@@ -50,6 +50,26 @@ class Settings(BaseSettings):
             raise ValueError(msg)
         return v
 
+    customer_jwt_secret: str = ""
+
+    @field_validator("customer_jwt_secret")
+    @classmethod
+    def validate_customer_jwt_secret_length(cls, v: str) -> str:
+        """Enforce non-empty customer JWT secret with minimum 32-byte length per RFC 7518 §3.2.
+
+        An empty or missing CUSTOMER_JWT_SECRET environment variable will
+        cause the application to fail at startup rather than boot with an
+        insecure empty HMAC key.
+        """
+        if not v:
+            raise ValueError(
+                "CUSTOMER_JWT_SECRET environment variable is required and must not be empty"
+            )
+        if len(v.encode()) < 32:
+            msg = "CUSTOMER_JWT_SECRET must be at least 32 bytes"
+            raise ValueError(msg)
+        return v
+
 
 @lru_cache
 def get_settings() -> Settings:
