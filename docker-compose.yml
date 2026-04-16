@@ -42,6 +42,54 @@ services:
       retries: 5
       start_period: 15s
 
+  gateway:
+    build:
+      context: .
+      target: gateway
+    container_name: sb-gateway
+    ports:
+      - "8080:8000"
+    networks:
+      - switchboard-internal
+    environment:
+      - CUSTOMER_JWT_SECRET=${CUSTOMER_JWT_SECRET}
+      - OPERATOR_JWT_SECRET=${OPERATOR_JWT_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+      echo:
+        condition: service_healthy
+      ping:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/.well-known/oauth-protected-resource')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  admin-api:
+    build:
+      context: .
+      target: admin-api
+    container_name: sb-admin
+    ports:
+      - "8090:8000"
+    networks:
+      - switchboard-internal
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/switchboard
+      - OPERATOR_JWT_SECRET=${OPERATOR_JWT_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/servers')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
 networks:
   switchboard-internal:
     driver: bridge
