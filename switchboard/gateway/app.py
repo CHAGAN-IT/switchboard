@@ -73,7 +73,18 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     The client is stored on app.state so proxy handlers can access it
     via request.app.state.http_client.
+
+    Validates CUSTOMER_JWT_SECRET is present and meets the 32-byte minimum
+    required by RFC 7518 §3.2 — fails fast rather than serving requests
+    with a missing signing key.
     """
+    from switchboard.config import get_settings
+
+    settings = get_settings()
+    if not settings.customer_jwt_secret:
+        raise RuntimeError(
+            "CUSTOMER_JWT_SECRET environment variable is required for the gateway"
+        )
     app.state.http_client = httpx.AsyncClient(timeout=30.0)
     yield
     await app.state.http_client.aclose()

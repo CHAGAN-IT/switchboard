@@ -50,23 +50,20 @@ class Settings(BaseSettings):
             raise ValueError(msg)
         return v
 
+    # Gateway-only: validated at startup in switchboard.gateway.app lifespan
     customer_jwt_secret: str = ""
 
     @field_validator("customer_jwt_secret")
     @classmethod
     def validate_customer_jwt_secret_length(cls, v: str) -> str:
-        """Enforce non-empty customer JWT secret with minimum 32-byte length per RFC 7518 §3.2.
+        """Enforce minimum 32-byte length when a customer JWT secret is provided.
 
-        An empty or missing CUSTOMER_JWT_SECRET environment variable will
-        cause the application to fail at startup rather than boot with an
-        insecure empty HMAC key.
+        An empty value is allowed here so the admin-api can start without
+        CUSTOMER_JWT_SECRET. The gateway validates non-empty at startup via
+        its lifespan function.
         """
-        if not v:
-            raise ValueError(
-                "CUSTOMER_JWT_SECRET environment variable is required and must not be empty"
-            )
-        if len(v.encode()) < 32:
-            msg = "CUSTOMER_JWT_SECRET must be at least 32 bytes"
+        if v and len(v.encode()) < 32:
+            msg = "CUSTOMER_JWT_SECRET must be at least 32 bytes when set"
             raise ValueError(msg)
         return v
 

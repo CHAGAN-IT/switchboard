@@ -136,6 +136,11 @@ async def proxy_mcp_request(
             detail=f"Server '{server_name}' is unavailable",
         ) from None
 
+    # Log here (not in middleware) because BaseHTTPMiddleware runs call_next
+    # in a new asyncio task — contextvars bound in the route (user_identity,
+    # server_name) are not visible in the middleware context after call_next.
+    log.info("proxied_request", http_status=rp_resp.status_code)
+
     # Register aclose as a BackgroundTask so the connection is released
     # even if the client disconnects mid-stream (T-5-08).
     return StreamingResponse(
