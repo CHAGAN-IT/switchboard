@@ -16,6 +16,32 @@ services:
       timeout: 3s
       retries: 5
 
+  echo:
+    build:
+      context: servers/echo
+    container_name: sb-echo
+    networks:
+      - switchboard-internal
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/mcp')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  ping:
+    build:
+      context: servers/ping
+    container_name: sb-ping
+    networks:
+      - switchboard-internal
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/mcp')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
 networks:
   switchboard-internal:
     driver: bridge
