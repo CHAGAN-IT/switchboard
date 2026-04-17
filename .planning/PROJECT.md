@@ -19,8 +19,8 @@ Organizations can deploy, manage, and govern MCP servers in one place — custom
 
 - [ ] Operator can register and manage MCP servers via an Admin REST API
 - [ ] Each MCP server runs in its own container, managed by Switchboard
-- [ ] Customers access MCP servers through a single namespaced URL (e.g., `/servers/{server-name}`)
-- [ ] Customers authenticate via OAuth/JWT before accessing any MCP server
+- [x] Customers access MCP servers through a single namespaced URL (e.g., `/servers/{server-name}`) — Validated in Phase 05: gateway
+- [x] Customers authenticate via OAuth/JWT before accessing any MCP server — Validated in Phase 05: gateway
 - [ ] Only operator-approved MCP servers are accessible to customers
 - [ ] Platform runs on AWS in production; runs locally via Docker Compose for development
 - [ ] Codebase is Python with `switchboard/` as the top-level package directory
