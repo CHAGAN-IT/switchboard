@@ -100,9 +100,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Dependencies, config, require_customer auth dependency, Wave 0 test stubs
-- [ ] 05-02-PLAN.md — Gateway proxy module, app factory, well-known endpoint, full test suite
-- [ ] 05-03-PLAN.md — Root Dockerfile, docker-compose gateway service, human-verified docker compose up
+- [x] 05-01-PLAN.md — Dependencies, config, require_customer auth dependency, Wave 0 test stubs
+- [x] 05-02-PLAN.md — Gateway proxy module, app factory, well-known endpoint, full test suite
+- [x] 05-03-PLAN.md — Root Dockerfile, docker-compose gateway service, human-verified docker compose up
 
 ### Phase 6: Health Monitor
 **Goal**: The platform continuously polls running MCP server containers and exposes current health status via the Admin API so operators know when servers are degraded without manual inspection.
