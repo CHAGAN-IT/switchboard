@@ -14,7 +14,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
-from switchboard.registry.models import ServerStatus
+from switchboard.registry.models import HealthStatus, ServerStatus
 
 
 class ServerCreate(BaseModel):
@@ -53,5 +53,6 @@ class ServerRead(BaseModel):
     description: str | None
     status: ServerStatus
     container_id: str | None
+    health_status: HealthStatus | None
     created_at: datetime
     updated_at: datetime

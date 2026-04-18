@@ -50,6 +50,18 @@ class Settings(BaseSettings):
             raise ValueError(msg)
         return v
 
+    # Health monitor
+    health_poll_interval: int = 30
+
+    @field_validator("health_poll_interval")
+    @classmethod
+    def validate_poll_interval(cls, v: int) -> int:
+        """Enforce minimum 5-second poll interval to prevent resource exhaustion."""
+        if v < 5:
+            msg = "HEALTH_POLL_INTERVAL must be at least 5 seconds"
+            raise ValueError(msg)
+        return v
+
     # Gateway-only: validated at startup in switchboard.gateway.app lifespan
     customer_jwt_secret: str = ""
 

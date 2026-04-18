@@ -35,6 +35,18 @@ class ServerStatus(enum.Enum):
     error = "error"
 
 
+class HealthStatus(enum.Enum):
+    """Health poll result for a running MCP server container.
+
+    Values: healthy, degraded, unreachable.
+    Null in the database means "not yet polled" (D-08).
+    """
+
+    healthy = "healthy"
+    degraded = "degraded"
+    unreachable = "unreachable"
+
+
 class Server(Base):
     """ORM model for a registered MCP server (D-06).
 
@@ -77,6 +89,10 @@ class Server(Base):
     container_id: Mapped[str | None] = mapped_column(
         String(128),
         nullable=True,
+    )
+    health_status: Mapped[HealthStatus | None] = mapped_column(
+        nullable=True,
+        default=None,
     )
     created_at: Mapped[datetime] = mapped_column(
         nullable=False,
