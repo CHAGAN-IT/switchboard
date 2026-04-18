@@ -18,7 +18,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **CONT-01**: Operator can start a registered server container via Admin API
 - [ ] **CONT-02**: Operator can stop a running server container via Admin API
 - [ ] **CONT-03**: Operator can restart a running server container via Admin API
-- [ ] **CONT-04**: Platform periodically polls each server's health and exposes current health status via Admin API
+- [x] **CONT-04**: Platform periodically polls each server's health and exposes current health status via Admin API
 
 ### Gateway
 
@@ -114,7 +114,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SECU-02 | Phase 5 | Pending |
 | OBSV-01 | Phase 5 | Pending |
 | PLAT-01 | Phase 5 | Pending |
-| CONT-04 | Phase 6 | Pending |
+| CONT-04 | Phase 6 | Complete |
 | PLAT-02 | Phase 7 | Pending |
 
 **Coverage:**

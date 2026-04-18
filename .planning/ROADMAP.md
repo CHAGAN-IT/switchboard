@@ -115,8 +115,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Data layer (HealthStatus enum, Server column, migration, config) and HealthMonitor core with unit tests
-- [ ] 06-02-PLAN.md — Admin API lifespan integration and health_status endpoint integration tests
+- [x] 06-01-PLAN.md — Data layer (HealthStatus enum, Server column, migration, config) and HealthMonitor core with unit tests
+- [x] 06-02-PLAN.md — Admin API lifespan integration and health_status endpoint integration tests
 
 ### Phase 7: AWS Deployment
 **Goal**: The complete Switchboard platform runs in production on AWS ECS Fargate with TLS termination at the ALB, private networking for MCP containers, and all secrets stored in Secrets Manager.
