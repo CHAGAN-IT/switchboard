@@ -6,8 +6,6 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from switchboard.registry.models import HealthStatus, ServerStatus
-
 
 @pytest.fixture
 def mock_docker_client() -> MagicMock:

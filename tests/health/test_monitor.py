@@ -13,11 +13,9 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
-import pytest
 
 from switchboard.health.monitor import HealthMonitor
 from switchboard.registry.models import HealthStatus, ServerStatus
-
 
 # ---------------------------------------------------------------------------
 # State machine: _compute_status
