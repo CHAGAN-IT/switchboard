@@ -112,7 +112,11 @@ Plans:
   1. `GET /servers/{name}` returns a `health_status` field reflecting the most recent liveness poll result (`healthy`, `degraded`, or `unreachable`)
   2. Stopping a container externally causes the health status to transition to `unreachable` within two polling intervals
   3. The health monitor runs as an asyncio background task and does not block gateway or admin API request handling
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Data layer (HealthStatus enum, Server column, migration, config) and HealthMonitor core with unit tests
+- [ ] 06-02-PLAN.md — Admin API lifespan integration and health_status endpoint integration tests
 
 ### Phase 7: AWS Deployment
 **Goal**: The complete Switchboard platform runs in production on AWS ECS Fargate with TLS termination at the ALB, private networking for MCP containers, and all secrets stored in Secrets Manager.
@@ -139,5 +143,5 @@ Note: Phase 4 depends only on Phase 1 and can be worked concurrently with Phases
 | 3. Container Manager | 0/2 | Planning complete | - |
 | 4. Reference Servers | 0/2 | Planning complete | - |
 | 5. Gateway | 0/3 | Planning complete | - |
-| 6. Health Monitor | 0/? | Not started | - |
+| 6. Health Monitor | 0/2 | Planning complete | - |
 | 7. AWS Deployment | 0/? | Not started | - |
