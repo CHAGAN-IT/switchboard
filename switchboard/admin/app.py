@@ -6,6 +6,7 @@ Entry point for running the Admin API server:
 Mounts the server registration router at /api/v1/.
 Starts the health monitor background task in the lifespan.
 """
+
 from __future__ import annotations
 
 import asyncio
