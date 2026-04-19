@@ -17,10 +17,11 @@ Organizations can deploy, manage, and govern MCP servers in one place — custom
 
 ### Active
 
-- [ ] Operator can register and manage MCP servers via an Admin REST API
-- [ ] Each MCP server runs in its own container, managed by Switchboard
+- [x] Operator can register and manage MCP servers via an Admin REST API — Validated in Phase 02: admin-api
+- [x] Each MCP server runs in its own container, managed by Switchboard — Validated in Phase 03: container-manager
 - [x] Customers access MCP servers through a single namespaced URL (e.g., `/servers/{server-name}`) — Validated in Phase 05: gateway
 - [x] Customers authenticate via OAuth/JWT before accessing any MCP server — Validated in Phase 05: gateway
+- [x] Registered MCP servers are health-monitored; health_status surfaced via Admin API — Validated in Phase 06: health-monitor
 - [ ] Only operator-approved MCP servers are accessible to customers
 - [ ] Platform runs on AWS in production; runs locally via Docker Compose for development
 - [ ] Codebase is Python with `switchboard/` as the top-level package directory
@@ -78,4 +79,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-14 after Phase 01: foundation complete*
+*Last updated: 2026-04-19 after Phase 06: health-monitor complete*
