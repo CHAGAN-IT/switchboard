@@ -50,6 +50,12 @@ class Settings(BaseSettings):
             raise ValueError(msg)
         return v
 
+    # ECS configuration (used only when running in ECS; defaults are
+    # no-ops for local Docker Compose development)
+    aws_region: str = ""
+    ecs_cluster_arn: str = ""
+    cloud_map_domain: str = ""  # ".switchboard.local" in ECS, "" locally
+
     # Health monitor
     health_poll_interval: int = 30
 
