@@ -27,3 +27,8 @@ output "mcp_server_security_group_id" {
   value       = aws_security_group.mcp_server.id
   description = "Security group ID for MCP server ECS services. Ingress restricted to gateway only (D-08)."
 }
+
+output "migration_task_definition_arn" {
+  value       = aws_ecs_task_definition.migration.arn
+  description = "ARN of the Alembic migration task definition. Run via: aws ecs run-task --task-definition THIS_ARN"
+}
