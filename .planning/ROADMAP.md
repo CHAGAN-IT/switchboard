@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 4: Reference Servers** - Echo and ping MCP servers for end-to-end routing validation
 - [ ] **Phase 5: Gateway** - JWT-authenticated routing proxy with full local Docker Compose topology
 - [ ] **Phase 6: Health Monitor** - Periodic liveness polling and health status tracking
-- [ ] **Phase 7: AWS Deployment** - ECS Fargate backend and CDK infrastructure stack
+- [ ] **Phase 7: AWS Deployment** - ECS Fargate backend and Terraform infrastructure stack
 
 ## Phase Details
 
@@ -123,11 +123,17 @@ Plans:
 **Depends on**: Phase 6
 **Requirements**: PLAT-02
 **Success Criteria** (what must be TRUE):
-  1. `cdk deploy` provisions a working stack — gateway, admin API, PostgreSQL (RDS), and reference server tasks — with all ECS services healthy
+  1. `terraform apply` provisions a working stack — gateway, admin API, PostgreSQL (RDS), and reference server tasks — with all ECS services healthy
   2. Customer MCP requests over HTTPS to the ALB DNS name are correctly routed to the matching ECS task
   3. MCP server containers are in private subnets with security groups that restrict ingress to the gateway security group only — no public port exposure
   4. An ECS task that fails its health check does not receive traffic until it passes again
-**Plans**: TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Foundation infrastructure modules: bootstrap, VPC, RDS, Secrets Manager, ECR
+- [ ] 07-02-PLAN.md — Networking and service discovery modules: internal ALB, Cloud Map, ECS cluster with security groups
+- [ ] 07-03-PLAN.md — ECS services, task definitions, IAM roles, and dev environment root Terraform config
+- [ ] 07-04-PLAN.md — Python ECS adapter, config updates, gateway Cloud Map support (TDD)
 
 ## Progress
 
@@ -144,4 +150,4 @@ Note: Phase 4 depends only on Phase 1 and can be worked concurrently with Phases
 | 4. Reference Servers | 0/2 | Planning complete | - |
 | 5. Gateway | 0/3 | Planning complete | - |
 | 6. Health Monitor | 0/2 | Planning complete | - |
-| 7. AWS Deployment | 0/? | Not started | - |
+| 7. AWS Deployment | 0/4 | Planning complete | - |
