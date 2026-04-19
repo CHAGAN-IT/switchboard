@@ -20,6 +20,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from starlette.background import BackgroundTask
 from starlette.responses import StreamingResponse
 
+from switchboard.config import get_settings
 from switchboard.gateway.auth import require_customer
 from switchboard.registry.models import SERVER_NAME_PATTERN
 
@@ -41,19 +42,26 @@ async def resolve_backend(server_name: str, session_id: str | None) -> str:
     session affinity. If session_id is new, records and returns the
     server-name-derived URL.
 
+    In ECS, the Cloud Map domain suffix (e.g. ``.switchboard.local``)
+    is appended to produce DNS names that resolve via AWS Cloud Map
+    service discovery (D-07). In local Docker Compose, the suffix is
+    empty and the plain ``sb-{name}`` hostname resolves via Docker DNS.
+
     Args:
         server_name: The MCP server name used for DNS-based routing.
         session_id: The Mcp-Session-Id header value, or None if absent.
 
     Returns:
-        Backend base URL of the form http://sb-{name}:8000.
+        Backend base URL of the form ``http://sb-{name}{suffix}:8000``.
     """
+    settings = get_settings()
+    domain_suffix = settings.cloud_map_domain
     if session_id is None:
-        return f"http://sb-{server_name}:8000"
+        return f"http://sb-{server_name}{domain_suffix}:8000"
     async with _session_lock:
         if session_id in _session_map:
             return _session_map[session_id]
-        target = f"http://sb-{server_name}:8000"
+        target = f"http://sb-{server_name}{domain_suffix}:8000"
         _session_map[session_id] = target
         return target
 

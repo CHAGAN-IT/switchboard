@@ -520,3 +520,104 @@ class TestConstants:
 
     def test_docker_network(self) -> None:
         assert DOCKER_NETWORK == "switchboard-internal"
+
+
+# ---------------------------------------------------------------------------
+# ECS dispatch tests
+# ---------------------------------------------------------------------------
+
+
+class TestECSDispatch:
+    """Tests for ECS environment detection and dispatch."""
+
+    async def test_start_routes_to_ecs_when_metadata_uri_set(
+        self,
+        mock_server: MagicMock,
+        mock_session: AsyncMock,
+        mock_repo: AsyncMock,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """In ECS environment, start() uses ECS adapter."""
+        monkeypatch.setenv(
+            "ECS_CONTAINER_METADATA_URI", "http://169.254.170.2/v4/..."
+        )
+        monkeypatch.setenv("AWS_REGION", "us-east-1")
+        monkeypatch.setenv(
+            "ECS_CLUSTER_ARN",
+            "arn:aws:ecs:us-east-1:123:cluster/test",
+        )
+
+        mock_ecs_adapter = AsyncMock()
+        mock_ecs_adapter.start_service = AsyncMock()
+
+        manager = ContainerManager(ecs_adapter=mock_ecs_adapter)
+        await manager.start(mock_session, mock_server, mock_repo)
+
+        mock_ecs_adapter.start_service.assert_called_once_with(
+            f"{CONTAINER_NAME_PREFIX}{mock_server.name}"
+        )
+
+    async def test_start_routes_to_docker_when_metadata_uri_absent(
+        self,
+        manager: ContainerManager,
+        mock_docker_client: MagicMock,
+        mock_server: MagicMock,
+        mock_session: AsyncMock,
+        mock_repo: AsyncMock,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Without ECS env var, start() uses Docker SDK."""
+        monkeypatch.delenv("ECS_CONTAINER_METADATA_URI", raising=False)
+
+        with patch(
+            "switchboard.container.manager.docker.from_env",
+            return_value=mock_docker_client,
+        ):
+            await manager.start(mock_session, mock_server, mock_repo)
+
+        mock_docker_client.containers.run.assert_called_once()
+
+    async def test_stop_routes_to_ecs_when_metadata_uri_set(
+        self,
+        mock_server: MagicMock,
+        mock_session: AsyncMock,
+        mock_repo: AsyncMock,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """In ECS environment, stop() uses ECS adapter."""
+        monkeypatch.setenv(
+            "ECS_CONTAINER_METADATA_URI", "http://169.254.170.2/v4/..."
+        )
+
+        mock_ecs_adapter = AsyncMock()
+        mock_ecs_adapter.stop_service = AsyncMock()
+
+        manager = ContainerManager(ecs_adapter=mock_ecs_adapter)
+        await manager.stop(mock_session, mock_server, mock_repo)
+
+        mock_ecs_adapter.stop_service.assert_called_once_with(
+            f"{CONTAINER_NAME_PREFIX}{mock_server.name}"
+        )
+
+    async def test_restart_routes_to_ecs_when_metadata_uri_set(
+        self,
+        mock_server: MagicMock,
+        mock_session: AsyncMock,
+        mock_repo: AsyncMock,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """In ECS environment, restart() uses ECS adapter."""
+        monkeypatch.setenv(
+            "ECS_CONTAINER_METADATA_URI", "http://169.254.170.2/v4/..."
+        )
+
+        mock_ecs_adapter = AsyncMock()
+        mock_ecs_adapter.restart_service = AsyncMock()
+
+        manager = ContainerManager(ecs_adapter=mock_ecs_adapter)
+        mock_session.get.return_value = mock_server
+        await manager.restart(mock_session, mock_server, mock_repo)
+
+        mock_ecs_adapter.restart_service.assert_called_once_with(
+            f"{CONTAINER_NAME_PREFIX}{mock_server.name}"
+        )
