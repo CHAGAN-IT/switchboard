@@ -23,7 +23,7 @@ Organizations can deploy, manage, and govern MCP servers in one place — custom
 - [x] Customers authenticate via OAuth/JWT before accessing any MCP server — Validated in Phase 05: gateway
 - [x] Registered MCP servers are health-monitored; health_status surfaced via Admin API — Validated in Phase 06: health-monitor
 - [ ] Only operator-approved MCP servers are accessible to customers
-- [ ] Platform runs on AWS in production; runs locally via Docker Compose for development
+- [x] Platform runs on AWS in production; runs locally via Docker Compose for development — Validated in Phase 07: aws-deployment (Terraform modules + ECS Fargate)
 - [ ] Codebase is Python with `switchboard/` as the top-level package directory
 - [ ] 1-2 reference MCP servers (echo/ping) included to validate the routing architecture
 
@@ -79,4 +79,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-19 after Phase 06: health-monitor complete*
+*Last updated: 2026-04-20 after Phase 07: aws-deployment complete — all 4 plans executed; Terraform infra modules (bootstrap, VPC, RDS, Secrets, ECR, ALB, Cloud Map, ECS) + Python ECS adapter + Cloud Map proxy support committed; human UAT (terraform apply + E2E routing) pending*
