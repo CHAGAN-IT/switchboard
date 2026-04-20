@@ -130,10 +130,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Foundation infrastructure modules: bootstrap, VPC, RDS, Secrets Manager, ECR
-- [ ] 07-02-PLAN.md — Networking and service discovery modules: internal ALB, Cloud Map, ECS cluster with security groups
-- [ ] 07-03-PLAN.md — ECS services, task definitions, IAM roles, and dev environment root Terraform config
-- [ ] 07-04-PLAN.md — Python ECS adapter, config updates, gateway Cloud Map support (TDD)
+- [x] 07-01-PLAN.md — Foundation infrastructure modules: bootstrap, VPC, RDS, Secrets Manager, ECR
+- [x] 07-02-PLAN.md — Networking and service discovery modules: internal ALB, Cloud Map, ECS cluster with security groups
+- [x] 07-03-PLAN.md — ECS services, task definitions, IAM roles, and dev environment root Terraform config
+- [x] 07-04-PLAN.md — Python ECS adapter, config updates, gateway Cloud Map support (TDD)
 
 ## Progress
 
