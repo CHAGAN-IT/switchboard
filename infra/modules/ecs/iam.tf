@@ -116,14 +116,19 @@ data "aws_iam_policy_document" "gateway_task" {
     resources = [var.cloudmap_namespace_arn]
   }
 
-  # ECS describe for health/status queries
+  # ECS describe for health/status queries.
+  # Service ARNs are arn:aws:ecs:REGION:ACCOUNT:service/CLUSTER/SERVICE,
+  # not arn:aws:ecs:REGION:ACCOUNT:cluster/CLUSTER/* (T-7-10).
   statement {
     sid = "ECSDescribe"
     actions = [
       "ecs:DescribeServices",
       "ecs:DescribeTasks",
     ]
-    resources = ["${aws_ecs_cluster.main.arn}/*"]
+    resources = [
+      "arn:aws:ecs:*:*:service/${aws_ecs_cluster.main.name}/*",
+      "arn:aws:ecs:*:*:task/${aws_ecs_cluster.main.name}/*",
+    ]
   }
 }
 
@@ -149,20 +154,37 @@ resource "aws_iam_role" "admin_api_task" {
 }
 
 data "aws_iam_policy_document" "admin_api_task" {
-  # ECS service lifecycle management
+  # ECS service lifecycle management.
+  # Service/task ARNs are arn:aws:ecs:REGION:ACCOUNT:service/CLUSTER/SERVICE
+  # and arn:aws:ecs:REGION:ACCOUNT:task/CLUSTER/TASK-ID — not cluster-arn/*.
+  # RegisterTaskDefinition and DeregisterTaskDefinition are account-level
+  # actions that require resources = ["*"] per AWS IAM docs (T-7-10 exception).
   statement {
-    sid = "ECSManage"
+    sid = "ECSManageServices"
     actions = [
       "ecs:CreateService",
       "ecs:UpdateService",
       "ecs:DeleteService",
       "ecs:DescribeServices",
       "ecs:DescribeTasks",
-      "ecs:RegisterTaskDefinition",
-      "ecs:DeregisterTaskDefinition",
       "ecs:RunTask",
     ]
-    resources = ["${aws_ecs_cluster.main.arn}/*"]
+    resources = [
+      "arn:aws:ecs:*:*:service/${aws_ecs_cluster.main.name}/*",
+      "arn:aws:ecs:*:*:task/${aws_ecs_cluster.main.name}/*",
+      "arn:aws:ecs:*:*:task-definition/switchboard-*",
+    ]
+  }
+
+  # RegisterTaskDefinition and DeregisterTaskDefinition do not support
+  # resource-level permissions per AWS IAM docs -- account-level only.
+  statement {
+    sid = "ECSTaskDefinitions"
+    actions = [
+      "ecs:RegisterTaskDefinition",
+      "ecs:DeregisterTaskDefinition",
+    ]
+    resources = ["*"]
   }
 
   # iam:PassRole scoped to execution and MCP server task roles only (T-7-13)
