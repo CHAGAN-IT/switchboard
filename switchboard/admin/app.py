@@ -78,3 +78,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.include_router(router)
+
+
+@app.get("/health", include_in_schema=False)
+async def health() -> dict[str, str]:
+    """Unauthenticated health endpoint for ECS/Docker healthchecks.
+
+    Returns a minimal response with no sensitive data (version, config,
+    debug info). Registered directly on the app -- not on the authenticated
+    router -- so ECS container healthchecks can reach it without JWT.
+
+    Returns:
+        Dictionary with single key "status" set to "ok".
+    """
+    return {"status": "ok"}
