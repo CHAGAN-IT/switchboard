@@ -196,6 +196,46 @@ class TestHttpProbe:
 
         assert result is False
 
+    async def test_http_probe_uses_cloud_map_domain(
+        self, mock_httpx_client: AsyncMock, mock_session_factory: MagicMock
+    ) -> None:
+        """_http_probe appends cloud_map_domain to hostname (ECS environment)."""
+        response = MagicMock()
+        response.status_code = 200
+        mock_httpx_client.post = AsyncMock(return_value=response)
+
+        monitor = HealthMonitor(
+            mock_session_factory,
+            mock_httpx_client,
+            cloud_map_domain=".switchboard.local",
+        )
+        result = await monitor._http_probe("echo")
+
+        assert result is True
+        mock_httpx_client.post.assert_called_once_with(
+            "http://sb-echo.switchboard.local:8000/mcp", content=b""
+        )
+
+    async def test_http_probe_no_domain_suffix_local(
+        self, mock_httpx_client: AsyncMock, mock_session_factory: MagicMock
+    ) -> None:
+        """_http_probe with empty cloud_map_domain works for local Docker Compose."""
+        response = MagicMock()
+        response.status_code = 200
+        mock_httpx_client.post = AsyncMock(return_value=response)
+
+        monitor = HealthMonitor(
+            mock_session_factory,
+            mock_httpx_client,
+            cloud_map_domain="",
+        )
+        result = await monitor._http_probe("echo")
+
+        assert result is True
+        mock_httpx_client.post.assert_called_once_with(
+            "http://sb-echo:8000/mcp", content=b""
+        )
+
 
 # ---------------------------------------------------------------------------
 # _probe_server: combines inspect + probe

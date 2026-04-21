@@ -54,6 +54,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         session_factory=async_session_factory,
         http_client=app.state.health_client,
         poll_interval=settings.health_poll_interval,
+        cloud_map_domain=settings.cloud_map_domain,
     )
     task = asyncio.create_task(monitor.run())
     logger.info(

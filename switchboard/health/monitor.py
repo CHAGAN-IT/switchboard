@@ -37,6 +37,8 @@ class HealthMonitor:
         session_factory: Async session factory for DB access (session-per-cycle).
         http_client: Shared httpx.AsyncClient for HTTP probes.
         poll_interval: Seconds between polling cycles (default 30).
+        cloud_map_domain: DNS suffix for Cloud Map service discovery.
+            ".switchboard.local" in ECS, "" (empty) in local Docker Compose.
     """
 
     def __init__(
@@ -44,10 +46,12 @@ class HealthMonitor:
         session_factory: async_sessionmaker[AsyncSession],
         http_client: httpx.AsyncClient,
         poll_interval: int = 30,
+        cloud_map_domain: str = "",
     ) -> None:
         self._session_factory = session_factory
         self._client = http_client
         self._interval = poll_interval
+        self._cloud_map_domain = cloud_map_domain
         self._failure_counts: dict[str, int] = {}
 
     async def run(self) -> None:
@@ -137,7 +141,7 @@ class HealthMonitor:
         Returns:
             True if any HTTP response was received, False on transport error.
         """
-        url = f"http://{CONTAINER_NAME_PREFIX}{server_name}:8000/mcp"
+        url = f"http://{CONTAINER_NAME_PREFIX}{server_name}{self._cloud_map_domain}:8000/mcp"
         try:
             await self._client.post(url, content=b"")
             return True

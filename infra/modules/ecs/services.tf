@@ -126,6 +126,7 @@ resource "aws_ecs_task_definition" "admin_api" {
     environment = [
       { name = "AWS_REGION", value = var.aws_region },
       { name = "ECS_CLUSTER_ARN", value = aws_ecs_cluster.main.arn },
+      { name = "CLOUD_MAP_DOMAIN", value = ".switchboard.local" },
     ]
 
     logConfiguration = {
