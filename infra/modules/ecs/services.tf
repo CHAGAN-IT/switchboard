@@ -138,7 +138,9 @@ resource "aws_ecs_task_definition" "admin_api" {
     }
 
     healthCheck = {
-      command     = ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/servers')\""]
+      # /health is an unauthenticated endpoint -- /api/v1/servers requires
+      # JWT auth and will return 401, cycling the container indefinitely.
+      command     = ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
       interval    = 10
       timeout     = 5
       retries     = 3
