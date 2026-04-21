@@ -67,11 +67,15 @@ resource "aws_security_group" "vpc_endpoints" {
   }
 
   egress {
-    description = "Allow all outbound"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    # Interface VPC endpoints are passive -- they only accept inbound
+    # connections and return responses; they do not initiate outbound
+    # connections to the internet. Restrict egress to HTTPS within the
+    # VPC only for least-privilege (D-05).
+    description = "HTTPS responses within VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
   }
 
   tags = {
