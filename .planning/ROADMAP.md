@@ -135,10 +135,22 @@ Plans:
 - [x] 07-03-PLAN.md — ECS services, task definitions, IAM roles, and dev environment root Terraform config
 - [x] 07-04-PLAN.md — Python ECS adapter, config updates, gateway Cloud Map support (TDD)
 
+### Phase 8: ECS Production Fixes
+**Goal:** Admin API reaches healthy state in ECS and the health monitor correctly probes running containers in Cloud Map — unblocking production deployment end-to-end.
+**Depends on**: Phase 7
+**Requirements**: PLAT-02, CONT-04
+**Gap Closure:** Closes gaps from v1.0 audit
+
+Tasks:
+1. Add `GET /health` route to `switchboard/admin/app.py` — returns `{"status": "ok"}` with HTTP 200, unauthenticated
+2. Align `Dockerfile` admin-api healthcheck to use `GET /health` (replaces broken `/api/v1/servers → 401`)
+3. Align `services.tf` ECS healthcheck (line 143) to use `GET /health` (replaces broken `→ 404`)
+4. Fix `switchboard/health/monitor.py:140` — append `settings.cloud_map_domain` to probe hostname, mirroring pattern in `gateway/proxy.py:72`
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 Note: Phase 4 depends only on Phase 1 and can be worked concurrently with Phases 2-3.
 
@@ -151,3 +163,4 @@ Note: Phase 4 depends only on Phase 1 and can be worked concurrently with Phases
 | 5. Gateway | 0/3 | Planning complete | - |
 | 6. Health Monitor | 0/2 | Planning complete | - |
 | 7. AWS Deployment | 0/4 | Planning complete | - |
+| 8. ECS Production Fixes | 0/1 | Gap closure phase | - |
