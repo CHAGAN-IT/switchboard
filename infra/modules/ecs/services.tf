@@ -25,7 +25,7 @@ resource "aws_ecs_task_definition" "gateway" {
 
   container_definitions = jsonencode([{
     name      = "gateway"
-    image     = "${var.ecr_repository_urls["gateway"]}:latest"
+    image     = "${var.ecr_repository_urls["gateway"]}:${var.image_tags["gateway"]}"
     essential = true
 
     portMappings = [{
@@ -110,7 +110,7 @@ resource "aws_ecs_task_definition" "admin_api" {
 
   container_definitions = jsonencode([{
     name      = "admin-api"
-    image     = "${var.ecr_repository_urls["admin-api"]}:latest"
+    image     = "${var.ecr_repository_urls["admin-api"]}:${var.image_tags["admin-api"]}"
     essential = true
 
     portMappings = [{
@@ -189,7 +189,7 @@ resource "aws_ecs_task_definition" "echo" {
 
   container_definitions = jsonencode([{
     name      = "echo"
-    image     = "${var.ecr_repository_urls["echo"]}:latest"
+    image     = "${var.ecr_repository_urls["echo"]}:${var.image_tags["echo"]}"
     essential = true
 
     portMappings = [{
@@ -255,7 +255,7 @@ resource "aws_ecs_task_definition" "ping" {
 
   container_definitions = jsonencode([{
     name      = "ping"
-    image     = "${var.ecr_repository_urls["ping"]}:latest"
+    image     = "${var.ecr_repository_urls["ping"]}:${var.image_tags["ping"]}"
     essential = true
 
     portMappings = [{
@@ -325,7 +325,7 @@ resource "aws_ecs_task_definition" "migration" {
 
   container_definitions = jsonencode([{
     name      = "migration"
-    image     = "${var.ecr_repository_urls["admin-api"]}:latest"
+    image     = "${var.ecr_repository_urls["admin-api"]}:${var.image_tags["admin-api"]}"
     essential = true
     command   = ["uv", "run", "alembic", "upgrade", "head"]
 

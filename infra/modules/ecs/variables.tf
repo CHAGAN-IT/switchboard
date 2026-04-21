@@ -72,3 +72,9 @@ variable "rds_security_group_id" {
   type        = string
   description = "Security group ID of the RDS instance, for reference in network rules."
 }
+
+variable "image_tags" {
+  type        = map(string)
+  description = "Map of image name to tag to deploy. Override with git SHA in CI to avoid collisions with immutable ECR repositories."
+  default     = { gateway = "latest", admin-api = "latest", echo = "latest", ping = "latest" }
+}
