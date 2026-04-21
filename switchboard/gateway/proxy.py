@@ -26,6 +26,20 @@ from switchboard.registry.models import SERVER_NAME_PATTERN
 
 log = structlog.get_logger()
 
+# Hop-by-hop headers must not be forwarded through an ASGI proxy layer.
+# Forwarding Transfer-Encoding or Connection causes content decoding errors
+# and connection management issues in Starlette's StreamingResponse.
+HOP_BY_HOP_HEADERS: frozenset[str] = frozenset({
+    "connection",
+    "keep-alive",
+    "proxy-authenticate",
+    "proxy-authorization",
+    "te",
+    "trailers",
+    "transfer-encoding",
+    "upgrade",
+})
+
 # Session stickiness map: Mcp-Session-Id → backend base URL
 # Protected by _session_lock for concurrent request safety (D-12).
 _session_map: dict[str, str] = {}
@@ -151,9 +165,15 @@ async def proxy_mcp_request(
 
     # Register aclose as a BackgroundTask so the connection is released
     # even if the client disconnects mid-stream (T-5-08).
+    # Hop-by-hop headers are stripped to prevent content decoding errors
+    # and connection management issues in the ASGI layer.
     return StreamingResponse(
         rp_resp.aiter_raw(),
         status_code=rp_resp.status_code,
-        headers=dict(rp_resp.headers),
+        headers={
+            k: v
+            for k, v in rp_resp.headers.items()
+            if k.lower() not in HOP_BY_HOP_HEADERS
+        },
         background=BackgroundTask(rp_resp.aclose),
     )
