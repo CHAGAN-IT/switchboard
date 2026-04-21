@@ -105,11 +105,19 @@ resource "aws_iam_role" "gateway_task" {
 }
 
 data "aws_iam_policy_document" "gateway_task" {
-  # Cloud Map service discovery read
+  # Cloud Map service discovery: DiscoverInstances is an account-level action
+  # that does not support resource-level permissions per AWS IAM docs.
+  # This is a documented exception to the "no Resource = *" rule (T-7-10).
+  statement {
+    sid     = "CloudMapDiscover"
+    actions = ["servicediscovery:DiscoverInstances"]
+    resources = ["*"]
+  }
+
+  # GetNamespace and ListServices can be scoped to the namespace ARN.
   statement {
     sid = "CloudMapRead"
     actions = [
-      "servicediscovery:DiscoverInstances",
       "servicediscovery:GetNamespace",
       "servicediscovery:ListServices",
     ]
