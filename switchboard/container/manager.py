@@ -182,11 +182,12 @@ class ContainerManager:
                 session, server.id, ServerStatus.error
             )
             raise
-        await repo.update_status(
+        # repo.update_status flushes and refreshes the entity, returning
+        # the authoritative updated instance -- no need to call session.get().
+        updated = await repo.update_status(
             session, server.id, ServerStatus.running
         )
-        refreshed = await session.get(type(server), server.id)
-        return refreshed if refreshed is not None else server
+        return updated if updated is not None else server
 
     async def _stop_ecs(
         self,
@@ -204,11 +205,12 @@ class ContainerManager:
                 session, server.id, ServerStatus.error
             )
             raise
-        await repo.update_status(
+        # repo.update_status flushes and refreshes the entity, returning
+        # the authoritative updated instance -- no need to call session.get().
+        updated = await repo.update_status(
             session, server.id, ServerStatus.stopped
         )
-        refreshed = await session.get(type(server), server.id)
-        return refreshed if refreshed is not None else server
+        return updated if updated is not None else server
 
     async def _restart_ecs(
         self,
@@ -226,11 +228,12 @@ class ContainerManager:
                 session, server.id, ServerStatus.error
             )
             raise
-        await repo.update_status(
+        # repo.update_status flushes and refreshes the entity, returning
+        # the authoritative updated instance -- no need to call session.get().
+        updated = await repo.update_status(
             session, server.id, ServerStatus.running
         )
-        refreshed = await session.get(type(server), server.id)
-        return refreshed if refreshed is not None else server
+        return updated if updated is not None else server
 
     # ------------------------------------------------------------------
     # Docker dispatch methods (local development)
