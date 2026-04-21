@@ -143,7 +143,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 08-01-PLAN.md — Health endpoint, healthcheck alignment, Cloud Map domain fix, CLOUD_MAP_DOMAIN env var
+- [x] 08-01-PLAN.md — Health endpoint, healthcheck alignment, Cloud Map domain fix, CLOUD_MAP_DOMAIN env var
 
 ## Progress
 
