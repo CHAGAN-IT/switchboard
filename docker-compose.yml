@@ -1,0 +1,98 @@
+services:
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: switchboard
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  echo:
+    build:
+      context: servers/echo
+    container_name: sb-echo
+    networks:
+      - switchboard-internal
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import socket; s=socket.create_connection(('localhost',8000),timeout=3); s.close()\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  ping:
+    build:
+      context: servers/ping
+    container_name: sb-ping
+    networks:
+      - switchboard-internal
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import socket; s=socket.create_connection(('localhost',8000),timeout=3); s.close()\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  gateway:
+    build:
+      context: .
+      target: gateway
+    container_name: sb-gateway
+    ports:
+      - "8080:8000"
+    networks:
+      - switchboard-internal
+    environment:
+      - CUSTOMER_JWT_SECRET=${CUSTOMER_JWT_SECRET}
+      - OPERATOR_JWT_SECRET=${OPERATOR_JWT_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+      echo:
+        condition: service_healthy
+      ping:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/.well-known/oauth-protected-resource')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  admin-api:
+    build:
+      context: .
+      target: admin-api
+    container_name: sb-admin
+    ports:
+      - "8090:8000"
+    networks:
+      - switchboard-internal
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/switchboard
+      - OPERATOR_JWT_SECRET=${OPERATOR_JWT_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  switchboard-internal:
+    driver: bridge
+
+volumes:
+  pgdata:

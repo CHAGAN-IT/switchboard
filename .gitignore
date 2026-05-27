@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+.venv/
+    
+# Environment variables
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Ruff
+.ruff_cache/
+
+# Docker
+pgdata/
+
+# Claude
+.claude
+
+# Claude sandbox
+.bash_profile
+.bashrc
+.gitconfig
+.gitmodules
+.idea
+.profile
+.ripgreprc
+.vscode
+.zprofile
+.zshrc
+HEAD
+hooks
+objects
+refs
+
