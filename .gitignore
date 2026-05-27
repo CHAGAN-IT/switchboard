@@ -8,7 +8,7 @@ build/
 
 # Virtual environment
 .venv/
-
+    
 # Environment variables
 .env
 
@@ -27,3 +27,23 @@ htmlcov/
 
 # Docker
 pgdata/
+
+# Claude
+.claude
+
+# Claude sandbox
+.bash_profile
+.bashrc
+.gitconfig
+.gitmodules
+.idea
+.profile
+.ripgreprc
+.vscode
+.zprofile
+.zshrc
+HEAD
+hooks
+objects
+refs
+
